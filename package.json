@@ -1,0 +1,49 @@
+{
+  "name": "lti-v1p3-sdcs",
+  "version": "0.1.0",
+  "description": "Ims Global LTI library with exampe tool.",
+  "main": "index.js",
+  "directories": {
+    "test": "tests"
+  },
+  "scripts": {
+    "start": "node server/index.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/GianFiyah/node-lti-v1p3-sdcs.git"
+  },
+  "dependencies": {
+    "axios": "^0.19.0",
+    "base64url": "^3.0.1",
+    "connect-mongo": "^3.0.0",
+    "dotenv": "^8.0.0",
+    "ejs": "^2.6.2",
+    "express": "^4.17.1",
+    "express-session": "^1.16.2",
+    "jsonwebtoken": "^8.5.1",
+    "jwk-to-pem": "^2.0.1",
+    "mongoose": "^5.6.6",
+    "morgan": "^1.9.1",
+    "nodemon": "^1.19.1",
+    "qs": "^6.7.0"
+  },
+  "devDependencies": {
+    "chai": "^4.2.0",
+    "mocha": "^6.2.0"
+  },
+  "keywords": [
+    "node",
+    "lti",
+    "ims",
+    "global",
+    "lms"
+  ],
+  "author": "",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/GianFiyah/node-lti-v1p3-sdcs/issues"
+  },
+  "homepage": "https://github.com/GianFiyah/node-lti-v1p3-sdcs#readme"
+}
