@@ -1,7 +1,7 @@
 const axios = require('axios');
 const { createHash } = require('crypto');
 const { fromBase64, encode } = require('base64url');
-const { passPhrase } = require('../lti_lib/keyGenerator');
+const { passPhrase } = require('../Provider/keyGenerator');
 
 /*
 * Check if Platform allows scores to be sent, if it does, request Authorization Code

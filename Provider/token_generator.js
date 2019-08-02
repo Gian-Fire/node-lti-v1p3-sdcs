@@ -1,5 +1,5 @@
 const jwt = require('jsonwebtoken');
-const { valid_oauth2_request } = require("../lti_lib/oauth2_validation");
+const { valid_oauth2_request } = require("../Provider/oauth2_validation");
 
 /* 
 * Creates a JSON web token in accordance with the LTI 1.3 standard and in conjunction with Oauth 2.0 validation. 

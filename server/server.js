@@ -6,12 +6,12 @@ const MongoStore = require('connect-mongo')(session);
 const mongoose = require('mongoose');
 
 //Required Library methods
-const Database = require('../lti_lib/mongoDB/Database');
-const { platformSchema, registerPlatform } = require('../lti_lib/register_platform');
-const { create_oidc_response, create_unique_string } = require("../lti_lib/oidc");
-const { launchTool } = require("../lti_lib/launch_validation");
-const { tokenMaker } = require("../lti_lib/token_generator");
-const { prep_send_score, send_score } = require("../lti_lib/student_score");
+const Database = require('../Provider/mongoDB/Database');
+const { platformSchema, registerPlatform } = require('../Provider/register_platform');
+const { create_oidc_response, create_unique_string } = require("../Provider/oidc");
+const { launchTool } = require("../Provider/launch_validation");
+const { tokenMaker } = require("../Provider/token_generator");
+const { prep_send_score, send_score } = require("../Provider/student_score");
 
 //Required Tool methods
 const { grade_project } = require("../tool/grading_tool");
@@ -69,10 +69,10 @@ registerPlatform(
 registerPlatform(
   'https://demo.moodle.net',
   'moodle',
-  '8tDENy4kyX9N59M',
+  'OKfbWoDpr5I6EYw',
   'https://demo.moodle.net/mod/lti/auth.php',
   'https://demo.moodle.net/mod/lti/token.php',
-  'https://node-lti-v1p3.herokuapp.com/project/submit',
+  'https://lti-v1p3-sdcs.herokuapp.com/project/submit',
   { method: 'JWK_SET', key: 'https://demo.moodle.net/mod/lti/certs.php' }
 );
 

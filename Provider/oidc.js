@@ -1,7 +1,7 @@
 require('dotenv').config();
 const url = require('url');    
-const Database = require('../lti_lib/mongoDB/Database.js');
-const { platformSchema } = require('../lti_lib/register_platform');
+const Database = require('../Provider/mongoDB/Database.js');
+const { platformSchema } = require('../Provider/register_platform');
 
 /*
 * Validates OIDC login request.  Checkes required parameters are present.
