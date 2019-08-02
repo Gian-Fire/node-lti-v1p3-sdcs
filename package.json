@@ -8,7 +8,7 @@
   },
   "scripts": {
     "start": "node server/index.js",
-    "test": "mocha tests/*.spec.js"
+    "test": "mocha tests/*.spec.js --exit"
   },
   "repository": {
     "type": "git",
