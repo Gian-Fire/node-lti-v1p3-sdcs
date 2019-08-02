@@ -1,5 +1,5 @@
 const expect = require('chai').expect;
-const { valid_launch_request } = require('../lti_lib/launch_validation.js');
+const { valid_launch_request } = require('../Provider/launch_validation.js');
 
 describe('Validate Launch Request', () => {
   let req = null;
