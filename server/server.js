@@ -35,7 +35,7 @@ app.use('/favicon.ico', express.static('./favicon.ico'));
 
 app.use( (req,res,next) => {
   res.locals.formData = null;
-  next();
+  next(); 
 });
 
 app.set("views", "./views");
