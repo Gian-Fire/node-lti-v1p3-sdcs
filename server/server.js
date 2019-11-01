@@ -4,6 +4,7 @@ const morgan = require("morgan");
 const session = require('express-session');
 const MongoStore = require('connect-mongo')(session);
 const mongoose = require('mongoose');
+const axios = require('axios');
 
 //Required Library methods
 const Database = require('../Provider/mongoDB/Database');
@@ -42,12 +43,12 @@ app.set("view engine", "ejs");
 
 /** Setup MongoDB to store Platform data
 */
-mongoose.connect(process.env.MONGODB_URI/*'mongodb://localhost:27017/TESTLTI'*/, {
-  useNewUrlParser: true, 
+mongoose.connect(/* process.env.MONGODB_URI */'mongodb://localhost:27017/TESTLTI', {
+  useNewUrlParser: true/* , 
   auth: {
     user: process.env.MONGO_USER,
     password: process.env.MONGO_PASSWORD
-  }
+  } */
 },
   (err) => {
     if(err) {
@@ -56,26 +57,29 @@ mongoose.connect(process.env.MONGODB_URI/*'mongodb://localhost:27017/TESTLTI'*/,
 });
 mongoose.Promise = Promise;
   
-registerPlatform(
-  'https://www.sandiegocode.school',
-  'SanDiegocode.school',
-  'uuYLGWBmhhuZvBf',
-  'https://www.sandiegocode.school/mod/lti/auth.php',
-  'https://www.sandiegocode.school/mod/lti/token.php',
-  'https://www.sandiegocode.school/project/submit',
-  { method: 'JWK_SET', key: 'https://www.sandiegocode.school/mod/lti/certs.php' }
-);
+// registerPlatform(
+//   'https://www.sandiegocode.school',
+//   'sandiegocodeschool',
+//   'uuYLGWBmhhuZvBf',
+//   'https://www.sandiegocode.school/mod/lti/auth.php',
+//   'https://www.sandiegocode.school/mod/lti/token.php',
+//   'https://www.sandiegocode.school/project/submit',
+//   { method: 'JWK_SET', key: 'https://www.sandiegocode.school/mod/lti/certs.php' }
+// );
 
 registerPlatform(
-  'https://demo.moodle.net',
-  'moodle',
-  'OKfbWoDpr5I6EYw',
-  'https://demo.moodle.net/mod/lti/auth.php',
-  'https://demo.moodle.net/mod/lti/token.php',
-  'https://lti-v1p3-sdcs.herokuapp.com/project/submit',
-  { method: 'JWK_SET', key: 'https://demo.moodle.net/mod/lti/certs.php' }
+  'https://learnyoucss.com',
+  'mood',
+  'JzRcKoDt6CHIKBx',
+  'https://learnyoucss.com/mod/lti/auth.php',
+  'https://learnyoucss.com/mod/lti/token.php',
+  'https://gianfire.localtunnel.me/project/submit',
+  { method: 'JWK_SET', key: 'https://learnyoucss.com/mod/lti/certs.php' }
 );
 
+/* 
+  Get public key
+*/
 app.get('/publickey/:name', async (req, res) => {
   let publicKey = await Database.GetKey(
     'platforms',
@@ -118,10 +122,12 @@ app.post("/oauth2/token", (req, res) => {
 });
 
 app.post('/auth_code', (req, res) => {
+  console.log(req.body);
   if (!req.body.error) {
     send_score(req, req.session.grade, 1);
   } else {
-    res.status(401).send('Access denied: ' + req.params.error);
+    // console.log('Else 401: ', req);
+    res.status(401).send('Access denied: ' + req.body.error);
   }
 });
 
@@ -144,23 +150,25 @@ app.get("/project/submit", (req, res) => {
 app.post(`/project/grading`, (req, res) => {
   //TOOL:  Grade the project and send the score if no errors; re-render Grading page.
   grade_project(req)
-  .then(grading => {
-    if (!grading.error) {
-      req.session.grade = grading.grade;
-      // const redir = prep_send_score(req);
-      // res.redirect(307, redir);
-    }
-    res.render("submit", {
-      payload: req.session.payload, 
-      formData: grading
-    });
-  });
+    .then(grading => {
+      if (!grading.error) {
+        req.session.grade = grading.grade;
+        const redir = prep_send_score(req);
+        // console.log('redir: ', redir)
+        res.redirect(302, redir);
+      }
+    // res.render("submit", {
+    //   payload: req.session.payload, 
+    //   formData: grading
+    // })
+    })
+    .catch(err => console.log(err));
 });
 
 app.post('/project/return', (req, res) => {
   //TOOL:  When user is done with Tool, return to Platform
   res.redirect(req.session.decoded_launch["https://purl.imsglobal.org/spec/lti/claim/launch_presentation"].return_url);
-  req.session.destroy();   //TODO:  Make sure sessions are being destroyed in MongoDB
+  req.session.destroy();
 });
 
 /*
@@ -174,7 +182,7 @@ app.get("/", (req, res) => {
 app.get('/demo/oidc', (req, res) => {
   //DEMO:  Sends an OIDC Login Response for demo purposes
   req.body = { 
-    iss: 'https://demo.moodle.net',
+    iss: 'https://sandbox.moodledemo.net',
     target_link_uri: 'https://node-lti-v1p3.herokuapp.com/',
     login_hint: '9',
     lti_message_hint: '377' 
@@ -198,7 +206,7 @@ app.get('/demo/project/submit', (req, res) => {
   let request_object = { nonce: 'g2f2cdPpYqPK7AwHcyXhjf5VL',
   iat: 1564506231,
   exp: 1564506291,
-  iss: 'https://demo.moodle.net',
+  iss: 'https://sandbox.moodledemo.net',
   aud: 'uuYLGWBmhhuZvBf',
   'https://purl.imsglobal.org/spec/lti/claim/deployment_id': '2',
   'https://purl.imsglobal.org/spec/lti/claim/target_link_uri': 'https://node-lti-v1p3.herokuapp.com//',

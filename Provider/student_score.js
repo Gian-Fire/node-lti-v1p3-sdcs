@@ -9,8 +9,17 @@ const { passPhrase } = require('../Provider/keyGenerator');
 * @returns boolean of whether sending scores is in scope or not
 */
 function prep_send_score(req) {
-  if (req.session.decoded_launch.hasOwnProperty('https://purl.imsglobal.org/spec/lti-ags/claim/endpoint') &&
-  req.session.decoded_launch["https://purl.imsglobal.org/spec/lti-ags/claim/endpoint"].scope.includes('https://purl.imsglobal.org/spec/lti-ags/scope/score')) {
+  if (req
+    .session
+    .decoded_launch
+    .hasOwnProperty('https://purl.imsglobal.org/spec/lti-ags/claim/endpoint') 
+    &&
+    req
+    .session
+    .decoded_launch["https://purl.imsglobal.org/spec/lti-ags/claim/endpoint"]
+    .scope
+    .includes('https://purl.imsglobal.org/spec/lti-ags/scope/score')
+  ) {
     return code_request(req, 'https://purl.imsglobal.org/spec/lti-ags/scope/score');
   } else {
     return false;
@@ -30,12 +39,13 @@ function code_request(req, scope) {
   const payload = {
     response_type: 'code',
     client_id: req.session.platform_DBinfo.consumerToolClientID,
-    redirect_uri: 'https://piedpiper.localtunnel.me/auth_code',
+    state: /* passPhrase() */req.session.login_response.state,
     scope: scope,
-    state: passPhrase(),
     code_challenge: generate_challenge(code_verifier), 
-    code_challenge_method: 'S256'
+    code_challenge_method: 'S256',
+    redirect_uri: 'https://gianfire.localtunnel.me/auth_code'
   };
+    console.log(payload);
   return req.session.platform_DBinfo.consumerAuthorizationURL + '?' + Object.keys(payload).map(key => key + '=' + payload[key]).join('&');
 }
 
@@ -63,11 +73,11 @@ function send_score(req, score, scoreMax) {
     grant_type: 'authorization_code',
     code:  req.params.code,
     client_id:  req.session.platform_DBinfo.consumerToolClientID,
-    redirect_uri: 'https://piedpiper.localtunnel.me/auth_code',
+    redirect_uri: 'https://gianfire.localtunnel.me/',
     scope: 'https://purl.imsglobal.org/spec/lti-ags/scope/score',
     code_verifier: req.session.code_verifier
   }
-  const base64_user_pass = encode(req.session.platform_DBinfo.kid[0].keyID + ':' + req.session.platform_DBinfo.kid[0].privateKey, 'base64');
+  const base64_user_pass = encode(req.session.platform_DBinfo.kid.keyID + ':' + req.session.platform_DBinfo.kid.privateKey, 'base64');
   
   axios.post(req.session.platform_DBinfo.consumerAccessTokenURL, payload, 
     { headers: {
@@ -91,10 +101,10 @@ function send_score(req, score, scoreMax) {
         'Authorization': result.token_type + ' ' + result.access_token,
         'Content-Type': 'application/vnd.ims.lis.v1.score+json'
     }})
-    .then(success => console.log(success))  //successfully posted grade
-    .catch(err => console.log(err));   //error posting grade
+    .then(success => console.log('successfull submission: ', success))  //successfully posted grade
+    .catch(err => console.log('error posting grade: ', err));   //error posting grade
   })
-  .catch(err => console.log(err)); //error getting token
+  .catch(err => console.log('error getting token: ', err)); //error getting token
 }
 
 module.exports = { prep_send_score, send_score };

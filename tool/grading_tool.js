@@ -15,7 +15,10 @@ async function grade_project(req) {
     grade: null,
   };
 
-  if ( url.github.includes('github.com') && (url.heroku.includes('.herokuapp.com') || url.heroku.includes('now.sh'))) {
+  if ( url.github.includes('github.com') 
+    && (url.heroku.includes('.herokuapp.com') 
+    || url.heroku.includes('now.sh'))
+  ) {
     let response = await axios.get(url.github);
 
     if (response.status === 200) {
